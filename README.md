@@ -1,6 +1,6 @@
 # massprops-studio
 
-Exact mass properties of a closed triangle mesh in **O(T)** — signed volume via the divergence theorem, plus surface area and a seeded Monte-Carlo cross-check that must reproduce the node-baked value **bit-for-bit** in the browser.
+Exact **volume and surface area** of a closed triangle mesh in **O(T)** — signed volume via the divergence theorem, plus a seeded Monte-Carlo cross-check that must reproduce the node-baked value **bit-for-bit** in the browser. (Despite the repo name, centroid / inertia / density are **not** implemented; see Known limits.)
 
 **Promise (measured, one reproducible command):** on a 3,480-triangle sphere, exact volume lands at **0.456%** of analytic `4/3π` (pure facet discretization) with **0.02087 ms median** over 7 batched runs, while the naive voxel-count baseline at 32³ costs **1,199 ms median** and is still off the faceted volume by **1.04%**. That is **57,474×** faster *and* more accurate. Baseline: `baseline/naive.mjs`.
 
@@ -25,7 +25,7 @@ python3 -m http.server 4173      # open http://localhost:4173 (needs CDN importm
 
 ## Evidence
 
-`bench/result.json` (7 reps, median; RSD 1.6% exact / 1.5% baseline, both < 10% so no noise caveat):
+`bench/result.json` (7 reps, median; RSD **1.17%** exact volume / **2.73%** voxel baseline, both < 10% so no noise caveat; exact-area RSD is 3.00%):
 
 | path | median | error vs truth |
 |---|---|---|
@@ -45,6 +45,8 @@ New to this repo/ledger: the exact boundary-integral mass-properties pass is **c
 
 - Sphere/torus "error" is the **faceted mesh vs analytic** difference, not algorithm error — refine the generator to shrink it; the divergence volume itself is exact for the faceted mesh.
 - The inside test uses one fixed generic ray direction (`RAY_DIR`); a point lying exactly on the surface is undefined (epsilon-guarded at 1e-7).
+- **Scope:** this repo computes volume + surface area only. Centroid, inertia tensor, and density are not implemented anywhere in `src/core.mjs`; the name `massprops` is broader than the delivered feature set.
+- **Open/non-watertight meshes are not rejected.** The divergence-theorem volume is only meaningful for a closed, consistently oriented surface; a mesh with boundary edges can return a silently wrong number. Check `χ = V − E + F` / boundary-edge count before trusting the result.
 - Voxel baseline is intentionally O(res³·T) and slow; it exists only as the honest comparison.
 - Browser needs network access to the pinned CDN (`three@0.160.0`); node paths need none.
 
