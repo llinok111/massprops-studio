@@ -49,7 +49,7 @@ const voxel32 = timeIt(() => voxelVolume(sph.verts, sph.tris, 32), 5);
 
 const vox32 = voxelVolume(sph.verts, sph.tris, 32);
 const voxErrPct = 100 * Math.abs(vox32 - Vexact) / Vexact;
-const exactErrPct = 0; // cube-exact; sphere facet error vs analytic is task-level, see verify
+
 
 const result = {
   date: new Date().toISOString(),
