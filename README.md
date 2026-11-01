@@ -2,7 +2,7 @@
 
 Exact mass properties of a closed triangle mesh in **O(T)** — signed volume via the divergence theorem, plus surface area and a seeded Monte-Carlo cross-check that must reproduce the node-baked value **bit-for-bit** in the browser.
 
-**Promise (measured, one reproducible command):** on a 3,480-triangle sphere, exact volume lands at **0.456%** of analytic `4/3π` (pure facet discretization) with **0.02094 ms median** over 7 batched runs, while the naive voxel-count baseline at 32³ costs **1,202 ms median** and is still off the faceted volume by **1.04%**. That is **57,411×** faster *and* more accurate. Baseline: `baseline/naive.mjs`.
+**Promise (measured, one reproducible command):** on a 3,480-triangle sphere, exact volume lands at **0.456%** of analytic `4/3π` (pure facet discretization) with **0.02087 ms median** over 7 batched runs, while the naive voxel-count baseline at 32³ costs **1,199 ms median** and is still off the faceted volume by **1.04%**. That is **57,474×** faster *and* more accurate. Baseline: `baseline/naive.mjs`.
 
 Upstream: none
 
@@ -29,10 +29,10 @@ python3 -m http.server 4173      # open http://localhost:4173 (needs CDN importm
 
 | path | median | error vs truth |
 |---|---|---|
-| exact divergence, 3,480 tris | 0.02094 ms | 0.456% (facet) vs analytic |
-| naive voxel 32³ | 1,202 ms | 1.04% vs faceted volume |
+| exact divergence, 3,480 tris | 0.02087 ms | 0.456% (facet) vs analytic |
+| naive voxel 32³ | 1,199 ms | 1.04% vs faceted volume |
 
-Cold start: exact 0.066 ms, voxel 1,204 ms.
+Cold start: exact 0.065 ms, voxel 1,252 ms.
 
 `bench/verify.mjs` asserts (all real values printed, not just "ok"):
 cube volume exactly 1 and area exactly 6; sphere V/A within 1% of analytic; torus within 1%; inside-test agreement 99.97% on 3,000 points; MC residuals |z|<4 at N=10k/40k; MC SE ratio `se(10k)/se(40k)` in [1.75, 2.25] (the 1/√N law); voxel baseline strictly worse; MC bit-identical across runs.
