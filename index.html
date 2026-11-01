@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Mass-Properties Studio — exact volume vs Monte-Carlo</title>
+<style>
+  :root { --bg:#0e1116; --panel:#161b22; --fg:#e6edf3; --muted:#8b949e; --accent:#58a6ff; --ok:#3fb950; --bad:#f85149; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--fg); font:14px/1.45 ui-sans-serif,system-ui,sans-serif; }
+  #app { display:grid; grid-template-columns: 340px 1fr; height:100vh; }
+  #panel { background:var(--panel); padding:16px; overflow:auto; border-right:1px solid #30363d; }
+  h1 { font-size:16px; margin:0 0 4px; }
+  .sub { color:var(--muted); font-size:12px; margin-bottom:14px; }
+  label { display:block; color:var(--muted); font-size:12px; margin:12px 0 4px; }
+  select, input[type=range] { width:100%; }
+  .row { display:flex; justify-content:space-between; gap:8px; font-variant-numeric:tabular-nums; }
+  .k { color:var(--muted); } .v { color:var(--fg); }
+  .card { background:#0d1117; border:1px solid #30363d; border-radius:8px; padding:10px; margin-top:10px; }
+  .ok { color:var(--ok); } .bad { color:var(--bad); }
+  #view { position:relative; }
+  #err { position:absolute; left:12px; bottom:12px; color:var(--bad); font-size:12px; }
+  .mono { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:12px; }
+</style>
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+</head>
+<body>
+<div id="app">
+  <div id="panel">
+    <h1>Mass-Properties Studio</h1>
+    <div class="sub">Exact divergence-theorem volume &amp; area, cross-checked by a seeded Monte-Carlo that must reproduce the node-baked value bit-for-bit.</div>
+
+    <label for="mesh">Mesh</label>
+    <select id="mesh"><option>cube</option><option selected>sphere</option><option>torus</option></select>
+
+    <label for="nsamples">Monte-Carlo samples: <span id="nval">10,000</span></label>
+    <input id="nsamples" type="range" min="0" max="5" step="1" value="3"/>
+
+    <div class="card">
+      <div class="row"><span class="k">exact volume</span><span class="v mono" id="vExact">—</span></div>
+      <div class="row"><span class="k">surface area</span><span class="v mono" id="vArea">—</span></div>
+      <div class="row"><span class="k">MC volume (browser)</span><span class="v mono" id="vMc">—</span></div>
+      <div class="row"><span class="k">MC volume (node baked)</span><span class="v mono" id="vMcNode">—</span></div>
+      <div class="row"><span class="k">abs diff</span><span class="v mono" id="vDiff">—</span></div>
+      <div class="row"><span class="k">bit-identical</span><span class="v mono" id="vBit">—</span></div>
+    </div>
+    <div class="card">
+      <div class="row"><span class="k">tris</span><span class="v mono" id="tris">—</span></div>
+      <div class="row"><span class="k">verts</span><span class="v mono" id="verts">—</span></div>
+      <div class="row"><span class="k">analytic volume</span><span class="v mono" id="vAn">—</span></div>
+    </div>
+    <div class="sub" style="margin-top:14px">Drag the slider: the browser recomputes with the <b>same</b> <code>src/core.mjs</code> the node bench uses. If the value stops matching the node-baked reference to the last digit, <span class="bad">bit-identical</span> turns red.</div>
+  </div>
+  <div id="view"></div>
+</div>
+<script type="module" src="./main.js"></script>
+</body>
+</html>
